@@ -27,4 +27,11 @@ class CourseRepository
     {
         return $this->entity->where('uuid', $identify)->firstOrFail();
     }
+
+    public function deleteCourseByUuid(string $identify)
+    {
+        $course = $this->getCourseByUuid($identify);
+
+        return $course->delete();
+    }
 }
