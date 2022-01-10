@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 class CourseController extends Controller
 {
 
-  protected $courseService;
+    protected $courseService;
 
     public function __construct(CourseService $courseService){
         $this->courseService = $courseService;
@@ -76,7 +76,7 @@ class CourseController extends Controller
      */
     public function destroy($identify)
     {
-        $course = $this->courseService->deleteCourse($identify);
+        $this->courseService->deleteCourse($identify);
 
         return response()->json([], 204);
     }
