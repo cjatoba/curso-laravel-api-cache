@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreUpdateCourse extends FormRequest
+class StoreUpdateLesson extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,10 +23,13 @@ class StoreUpdateCourse extends FormRequest
      */
     public function rules()
     {
-        $uuid = $this->course ?? '';
+        // dd($this);
+        $uuid = $this->lesson ?? '';
 
         return [
-            'name' => "required|min:3|max:255|unique:courses,name,{$uuid},uuid",
+            'module' => "required|exists:modules,uuid",
+            'name' => "required|min:3|max:255|unique:lessons,name,{$uuid},uuid",
+            'video' => "required|min:3|max:255|unique:lessons,video,{$uuid},uuid",
             'description' => 'nullable|min:3|max:9999',
         ];
     }

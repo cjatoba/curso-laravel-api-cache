@@ -29,6 +29,7 @@ class ModuleService
     public function createNewModule(array $data)
     {
         $course = $this->courseRepository->getCourseByUuid($data['course']);
+
         return $this->moduleRepository->createNewModule($course->id, $data);
     }
 
