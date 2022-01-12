@@ -42,7 +42,7 @@ class ModuleService
 
     public function updateModule(string $identify, array $data)
     {
-        $course = $this->moduleRepository->getModuleByUuid($data['course']);
+        $course = $this->courseRepository->getCourseByUuid($data['course']);
         return $this->moduleRepository->updateModuleByUuid($course->id, $identify, $data);
     }
 
