@@ -1,4 +1,4 @@
-name: Laravel
+name: Laravel CI/CD
 
 on:
   push:
@@ -6,7 +6,6 @@ on:
 
 jobs:
   laravel-tests:
-
     name: CI
     runs-on: ubuntu-latest
 
@@ -32,3 +31,37 @@ jobs:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
       run: vendor/bin/phpunit
+
+  laravel-deploy:
+    name: CD
+    needs: laravel-tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: main
+
+      - name: Deploy to server
+        uses: easingthemes/ssh-deploy@v2.2.11
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          ARGS: "-rltgoDzvO --exclude .git --exclude .docker --exclude .github"
+          REMOTE_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_USER: ${{ secrets.SSH_USER }}
+          TARGET: /home/${{ secrets.SSH_USER }}/ci-cd
+
+      - name: Execute comands SSH
+        uses: appleboy/ssh-action@master
+        env:
+          USER_PASS: "${{ secrets.USER_PASS }}"
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          envs: USER_PASS
+          script: |
+            cd ci-cd/
+            echo $USER_PASS | sudo -S docker-compose up -d
+            echo $USER_PASS | sudo -S docker-compose exec -T curso_api_cache composer install
+            echo $USER_PASS | sudo -S docker-compose exec -T curso_api_cache php artisan migrate --force
